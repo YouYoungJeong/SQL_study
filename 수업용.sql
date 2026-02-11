@@ -124,14 +124,83 @@ SELECT * FROM aa;
 DROP TABLE aa;
 
 -- 4) FOREIGN KEY(fk), 외부키, 참조키 제약:특정 칼럼이 다른 테이블의 칼럼을 참조
--- 	☆fk 대상은 pk다
---		: fk는 유니크 해야 하기 때문에 참조 대상이 pk임!
-
-CREATE TABLE jiwon(bum INT PRIMARY KEY , irum VARCHAR(10) NOT NULL,
+/* 	☆fk 대상은 pk다
+		: fk는 유니크 해야 하기 때문에 참조 대상이 pk임!
+ 		칼럼명은 달라도 되지만 타입은 같아야함
+*/
+CREATE TABLE jikwon(bun INT PRIMARY KEY , irum VARCHAR(10) NOT NULL,
  buser char(10) NOT NULL);
-INSERT INTO jiwon VALUES(1,'한송이', '인사과');
-INSERT INTO jiwon VALUES(2,'이기자', '인사과');
-INSERT INTO jiwon VALUES(3,'한송이', '판매과');
-SELECT * FROM jiwon;
+INSERT INTO jikwon VALUES(1,'한송이', '인사과');
+INSERT INTO jikwon VALUES(2,'이기자', '인사과');
+INSERT INTO jikwon VALUES(3,'한송이', '판매과');
+SELECT * FROM jikwon;
+
+CREATE TABLE gajok(CODE INT PRIMARY KEY, NAME VARCHAR(10) NOT NULL, 
+birth DATETIME, jikwonbun INT ,FOREIGN KEY(jikwonbun) REFERENCES jikwon(bun));
+
+INSERT INTO gajok VALUES(10,'한가해', '2015-05-12' , 3);
+INSERT INTO gajok VALUES(20,'공기밥', '2011-12-12' , 2);
+INSERT INTO gajok VALUES(30,'심심해', '2010-05-12' , 3);
+#ERR: 참조할 대상이 없어서 에러
+INSERT INTO gajok VALUES(30,'공기밥', '2013-12-12' , 5);
+SELECT * FROM gajok;
+
+-- fk가 참조하고 있는 delete하기
+DELETE FROM jikwon WHERE bun=1;
+
+# ERR : 참조 하고 있는 자료(가족)가 있으므로 삭제 불가
+DELETE FROM jikwon WHERE bun=2;
+
+# 참조키 삭제 후 삭제
+DELETE FROM gajok WHERE jikwonbun=2; -- 참조키 (pk가 2번) 가족자료 삭제
+DELETE FROM jikwon WHERE bun=2; -- 참조 가족이 없으므로 2번 직원 삭제 가능
+SELECT * FROM jikwon;
+-- 참고
+# CREATE TABLE gajok(CODE INT PRIMARY KEY ,...) ON DELETE CASCADE 
+# 직원자료를 삭제하면 관련있는 가족 자료도 함께 삭제 가능
+# 위험한 작업, 실무에서 사용 X
+
+# FK가 있는 테이블 먼저 drop
+DROP TABLE gajok;
+DROP TABLE jikwon;
+
+-- --------------------------------------------------
+-- default : 특정칼럼에 초기치 부여. null 예방
+/*
+	PRIMARY KEY AUTO_INCREMENT = AUTO_INCREMENT PRIMARY KEY 
+	pk 번호(bun) 자동증가, 오라클엔 없음.
+	필요한 사람들이 다 다른 DB프로그램 사용시 넣지말고 python에서 달아
+	게시판, 방명록 만들때 사용.
+*/
+CREATE TABLE aa(bun INT PRIMARY KEY AUTO_INCREMENT, 
+juso CHAR(20) DEFAULT '강남구 역삼동');
+INSERT INTO aa VALUES(1,'서초구 서초2동');
+INSERT INTO aa(juso) VALUES('서초구 서초3동');
+INSERT INTO aa(juso) VALUES('서초구 서초4동');
+INSERT INTO aa(bun) VALUES(5);
+INSERT INTO aa(bun) VALUES(6);
+SELECT * FROM aa
+
+DROP TABLE aa;
 
 
+-- -------------------------------------------------------
+# DB_RDEMS(66번) 문제 TEST
+CREATE TABLE pro(procode INT PRIMARY KEY, proname VARCHAR(10), 
+labnumber int CHECK(100<= labnumber <=500)); 
+SELECT * FROM pro;
+
+CREATE TABLE subname(subcode INT AUTO_INCREMENT PRIMARY KEY, 
+subname VARCHAR(20) UNIQUE, bookname VARCHAR(20), 
+mainpro INT ,FOREIGN KEY(mainpro) REFERENCES pro(procode));
+SELECT * FROM subname; 
+
+
+CREATE TABLE student(studnum INT PRIMARY KEY, studname VARCHAR(10), 
+studsubject INT ,FOREIGN KEY(studsubject) REFERENCES subname(subcode),
+gradenum INT DEFAULT(1) CHECK(1<= gradenum <= 4) );
+SELECT * FROM student;
+
+DROP TABLE student;
+DROP TABLE subname;
+DROP TABLE pro;
