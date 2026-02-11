@@ -124,7 +124,7 @@ SELECT * FROM aa;
 DROP TABLE aa;
 
 -- 4) FOREIGN KEY(fk), 외부키, 참조키 제약:특정 칼럼이 다른 테이블의 칼럼을 참조
--- 	☆fk 대상은 pk다!
+-- 	☆fk 대상은 pk다
 --		: fk는 유니크 해야 하기 때문에 참조 대상이 pk임!
 
 CREATE TABLE jiwon(bum INT PRIMARY KEY , irum VARCHAR(10) NOT NULL,
