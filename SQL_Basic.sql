@@ -103,6 +103,7 @@ DROP TABLE aa;
 	python에서 입력자료 오류검사를 2차 하고 
 	check를 넣어 마지막 검사하고 insert.
 	-> 프로는 무조건 해야함.
+	not null 도 제약조건
 */
 -- 2) check 제약 : 입력 자료의 특정 칼럼값 조건 검사
 CREATE TABLE aa(bun INT, nai INT CHECK(nai >= 20));
@@ -186,6 +187,7 @@ DROP TABLE aa;
 
 -- -------------------------------------------------------
 # DB_RDEMS(66번) 문제 TEST
+# check(100<=labnumber and labnumber => 500) 도 가능
 CREATE TABLE pro(procode INT PRIMARY KEY, proname VARCHAR(10), 
 labnumber int CHECK(100<= labnumber <=500)); 
 SELECT * FROM pro;
@@ -199,8 +201,67 @@ SELECT * FROM subname;
 CREATE TABLE student(studnum INT PRIMARY KEY, studname VARCHAR(10), 
 studsubject INT ,FOREIGN KEY(studsubject) REFERENCES subname(subcode),
 gradenum INT DEFAULT(1) CHECK(1<= gradenum <= 4) );
+
 SELECT * FROM student;
 
 DROP TABLE student;
 DROP TABLE subname;
 DROP TABLE pro;
+-- -------------------------------------------------------
+
+-- index (색인) : 검색 속도 향상을 위해 특정 colunm에 색인 부여 가능
+-- pk column은 자동으로 인덱싱됨(ascending sort :  오름차순 정렬)
+-- index를 자제해야 하는 경우 : insert(입력), update(수정) ,delete(삭제)등의
+-- 									  작업이 빈번한 경우 인덱스를 계속 재정렬함
+--										  --> 속도가 느려짐
+-- 단점: 메모리를 더 사용
+-- table 안에 생기는 키 모양은 PK, Index 지정된 표시
+
+CREATE TABLE aa(bun INT PRIMARY KEY, irum VARCHAR(10) NOT NULL,juso VARCHAR(50));
+INSERT INTO aa VALUES(1, '신선해', '테헤란로111');
+
+ALTER TABLE aa ADD INDEX ind_juso(juso)# juso칼럽에 인덱스 부여 
+ALTER TABLE aa DROP INDEX ind_juso 		# 인덱스 제거 
+SHOW INDEX FROM aa;
+/*
+DB관리자 관심 있으면 알아두는게 좋음
+마리아DB는 인덱싱을 하면 어센딩정렬에 BTREE타입으로 자동 지정함
+index type 의 종류 BTREE 또는 HASH가 있음.
+BTREE 이진 검색 (검색을 할때 자료를 반띵해서 위아래 골라서 검색)
+*/
+SELECT * FROM aa;
+# EXPLAIN 세부정보 보고 싶을때.
+EXPLAIN SELECT * FROM aa;
+DESC aa;
+DROP TABLE aa;
+
+
+-- 테이블 관련 주요 명령
+-- CREATE table 테이블명(....) : 생성
+-- ALTER table 테이블명(....)	  칼럼의 추가,수정,삭제, | 제약조건의 추가,삭제	
+-- DROP table 테이블명(....)
+
+CREATE TABLE aa(bun INT, irum VARCHAR(10), juso VARCHAR(50));
+INSERT INTO aa VALUES(1, 'tom', 'seoul');
+SELECT * FROM aa;
+
+ALTER TABLE aa RENAME kbs;  -- 테이블 명 변경
+SELECT * FROM aa;
+ALTER TABLE kbs RENAME aa;
+SELECT * FROM aa;
+
+-- 칼럼 관련 명령
+ALTER TABLE aa ADD (job_id INT DEFAULT 10); -- 칼럼 추가
+SELECT * FROM aa;
+
+ALTER TABLE aa CHANGE job_id job_num INT;   -- 칼럼 수정(이름이나 성격 변경 가능)
+SELECT * FROM aa;
+
+ALTER TABLE aa MODIFY job_num VARCHAR(10);  -- 칼럼 성격 변경(바꿀일 거의 없음.)
+DESC aa; # 구조보기
+
+ALTER TABLE aa DROP COLUMN job_num; 		  -- 칼럼 삭제
+DESC aa;
+
+DROP TABLE aa;
+# basic 끝
