@@ -1,15 +1,15 @@
 -- 실습용 datatable 생성------------------------------------------------- 
-create table sangdata(
-code int primary key,
+# 데이터 연결의 시작은 sangdata로 할것.
+create table sangdata(code int primary KEY,
 sang varchar(20),
-su int,
+su INT,
 dan int);
 insert into sangdata values(1,'장갑',3,10000);
 insert into sangdata values(2,'벙어리장갑',2,12000);
 insert into sangdata values(3,'가죽장갑',10,50000);
 insert into sangdata values(4,'가죽점퍼',5,650000);
 SELECT * FROM sangdata;
-
+DESC sangdata;
 
 create table buser(
 buserno int primary key, 
@@ -22,11 +22,12 @@ insert into buser values(20,'영업부','서울','02-100-2222');
 insert into buser values(30,'전산부','서울','02-100-3333');
 insert into buser values(40,'관리부','인천','032-200-4444');
 SELECT * FROM buser;
+DESC buser;
 
 
 create table jikwon(
 jikwonno int primary key,
-jikwonname varchar(10) not null,
+jikwonname varchar(10) not NULL, 
 busernum int not null,
 jikwonjik varchar(10) default '사원', 
 jikwonpay int,
@@ -67,7 +68,7 @@ insert into jikwon values(29,'박가희',10,'사원',4100,'2016-08-05','여','a'
 insert into jikwon values(30,'최미숙',30,'사원',4000,'2015-08-03','여','b');
 
 SELECT * FROM jikwon;
-
+DESC jikwon;
 
 
 create table gogek(
@@ -95,3 +96,4 @@ insert into gogek values(14,'김현주','031-167-1884','800128-2062777',11);
 insert into gogek values(15,'송운하','02-887-9344','830301-2013777',2);
 
 SELECT * FROM gogek;
+DESC gogek;
