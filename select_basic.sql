@@ -376,14 +376,13 @@ SELECT TIMESTAMPDIFF(unit,datetime_expr1,datetime_expr2)
 	- 합은 상관 없어
 */
 # 집계 함수 - sum() : 합
-SELECT sum(jikwonpay) as hap , avg(jikwonpay) as 평균 FROM jikwon;
-SELECT max(jikwonpay) AS 최대값, min(jikwonpay) AS 최소값 FROM jikwon;
 # NULL값 주기
 DESC jikwon;
 UPDATE jikwon SET jikwonpay=NULL WHERE jikwonno=5;
 SELECT * FROM jikwon;
 
-
+SELECT sum(jikwonpay) as hap , avg(jikwonpay) as 평균 FROM jikwon;
+SELECT max(jikwonpay) AS 최대값, min(jikwonpay) AS 최소값 FROM jikwon;
 SELECT AVG(jikwonpay), AVG(nvl(jikwonpay,0)) FROM jikwon;
 SELECT SUM(jikwonpay)/29, SUM(jikwonpay)/30 FROM jikwon;
 SELECT SUM(jikwonpay), AVG(jikwonpay) FROM jikwon;
@@ -393,4 +392,46 @@ SELECT COUNT(*) AS 인원수 FROM jikwon;
 # 표준편차, 분산
 SELECT STDDEV(jikwonpay), VAR_SAMP(jikwonpay) FROM jikwon;
 SELECT COUNT(*) AS 인원수,VAR_SAMP(jikwonpay) FROM jikwon WHERE busernum=10;
-SELECT COUNT(*) AS 인원수,VAR_SAMP(jikwonpay) FROM jikwon WHERE busernum=20;
+SELECT COUNT(*) AS 인원수,VAR_SAMP(jikwonpay) FROM jikwon WHERE busernum=20; 
+
+-- 직원 테이블에서 과장은 몇명인가
+SELECT COUNT(*) AS 인원수 FROM jikwon WHERE jikwonjik='과장';
+ -- 2010 년 이전에 입사한 남직원은 몇명인가
+SELECT COUNT(*) AS 남직원 FROM jikwon WHERE jikwonibsail<'2010-1-1' AND jikwongen='남';
+--2015년 이후 입사한 여직원의 연봉합, 연봉평균, 인원수는?
+SELECT SUM(jikwonpay) as 연봉합, AVG(jikwonpay) AS 연봉평균,COUNT(*) AS 인원수 
+FROM jikwon WHERE jikwonibsail > '2015-1-1' AND jikwongen='여';
+
+
+-- ☆group : 소계를 구하는 함수
+/*group by절: 그룸 칼럼에 대해 order by 할 수 없다. 이미 order by 진행중이기 떄문
+					단, 출력 결과는 order by(정렬) 가능
+	select 그룹칼럼명, 계산함수, ## 그룹칼럼명을 안 넣어주면 구분 불가
+	from 테이블명
+	where 조건 
+	group by 그룹칼럼명..
+	having 조건
+DB서버는 한번에 방문해서 작업 하는게 좋음.
+클라이언트에서 작업 할 수 있으면 좋다
+*/
+-- 성별, 연봉평균, 인원수 출력(GROUP BY)
+SELECT jikwongen, AVG(jikwonpay) AS 연봉평균, COUNT(*)  AS 직원수
+FROM jikwon GROUP BY jikwongen; 
+-- 부서별 연봉합
+SELECT busernum, SUM(jikwonpay) AS 연봉합 FROM jikwon
+GROUP BY busernum;
+
+-- 부서별 연봉합: 연봉합이 35000이상(HAVING 사용)
+SELECT busernum, SUM(jikwonpay) AS 연봉합 FROM jikwon
+GROUP BY busernum HAVING SUM(jikwonpay) >= 35000;
+-- 부서별 연봉합: 여성만 -> 골라내는거 먼저하기
+SELECT busernum, SUM(jikwonpay) AS 연봉합 FROM jikwon 
+HERE jikwongen='여'GROUP BY busernum ;
+-- 부서별 연봉합: 연봉합이 15000인 여성만 (별명으로 조건 참여)
+SELECT busernum, SUM(jikwonpay) AS paytotal FROM jikwon 
+WHERE jikwongen='여'GROUP BY busernum HAVING paytotal >= 15000;
+
+-- 주의 :group by 전에 order by X,
+# SELECT busernum, SUM(jikwonpay) FROM jikwon order by busernum GROUP BY busernum; 
+SELECT busernum, SUM(jikwonpay) FROM jikwon  
+GROUP BY busernum ORDER BY SUM(jikwonpay) DESC; 
