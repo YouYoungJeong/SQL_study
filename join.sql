@@ -43,11 +43,14 @@ INSERT INTO paygrade VALUES(4, 4000, 4999);
 INSERT INTO paygrade VALUES(5, 5000, 9999);
 SELECT * FROM paygrade;
 # non EQUI JION 실행.
-SELECT jiktab.jikwonname, jiktab.jikwonpay,paytab.grade
+
+SELECT jiktab.jikwonname, jiktab.jikwonpay, paytab.grade
 FROM jikwon AS jiktab, paygrade AS paytab
 WHERE jiktab.jikwonpay >= paytab.lpay 
 AND jiktab.jikwonpay <= paytab.hpay;
 
+DROP TABLE paygrade;
+-- --------------------------------------------------------
 -- INNER JOIN :  두 테이블을 조인 할 때 , 
 --  두 테이블에 모두 지정한 열의 데이터가 있는 경우만 추출
 -- 다 EQUI JION
@@ -98,6 +101,11 @@ FROM jikwon, buser
 WHERE busername(+) = buserno; 
 
 # FULL OUTER JOIN : MariaDB는 지원X
+SELECT j.jikwonno, j.jikwonname, b.busername
+FROM jikwon j FULL OUTER JOIN buser b
+ON j.busernum = b.buserno;
+
+
 
 # MariaDB 용---------------------------
 # LEFT OUTER JOIN
