@@ -148,7 +148,6 @@ INSERT INTO pum2 VALUES(20,'딸기');
 INSERT INTO pum2 VALUES(30,'참외');
 INSERT INTO pum2 VALUES(40,'수박');
 SELECT * FROM pum2;
-
 #union
 SELECT bun AS 번호, pummok AS 품명 FROM pum1
 UNION
